@@ -1,5 +1,7 @@
 package ru.job4j.tictactoe;
 
+import java.util.function.Predicate;
+
 public class Logic3T {
     private final Figure3T[][] table;
 
@@ -8,65 +10,35 @@ public class Logic3T {
     }
 
     public boolean isWinnerX() {
-//        i - ось X
-//        j - ось Y
+        return (winWithDiag(Figure3T::hasMarkX) || winWithVertOrHor(Figure3T::hasMarkX));
+    }
 
-        for (int i = 0; i < table[0].length; i++) {
-            for (int j = 0; j < table.length; j++) {
-                if (table[i][j].hasMarkX()) {
-                    int countGor = 1;
-                    int countVert = 1;
-//                check for winning in horizontal
-                    int gor = 1;
-                    while ((i + gor) < table[0].length && table[i + gor][j].hasMarkX()) {
-                        countGor++;
-                    }
-                    if (countGor == 3) {
-                        return true;
-                    }
-//                check for winning in vertical
-                    int vert = 1;
-                    while ((j + vert) < table.length && table[i][j + vert].hasMarkX()) {
-                        countVert++;
-                    }
-                    if (countVert == 3) {
-                        return true;
-                    }
+    public boolean isWinnerO() {
+        return (winWithDiag(Figure3T::hasMarkO) || winWithVertOrHor(Figure3T::hasMarkO));
+    }
+
+    public boolean winWithVertOrHor(Predicate<Figure3T> pr) {
+            for (int y = 0; y < table.length; y++) {
+                boolean horizontal = true;
+                boolean vertical = true;
+                for (int x = 0; x < table.length; x++) {
+                    horizontal &= pr.test(table[y][x]);
+                    vertical &= pr.test(table[x][y]);
                 }
-            }
+                if (horizontal) return true;
+                else if (vertical) return true;
         }
         return false;
     }
 
-    public boolean isWinnerO() {
-//        i - ось X
-//        j - ось Y
-
-        for (int i = 0; i < table[0].length; i++) {
-            for (int j = 0; j < table.length; j++) {
-                if (table[i][j].hasMarkO()) {
-                    int countGor = 1;
-                    int countVert = 1;
-//                check for winning in horizontal
-                    int gor = 1;
-                    while ((i + gor) < table[0].length && table[i + gor][j].hasMarkO()) {
-                        countGor++;
-                    }
-                    if (countGor == 3) {
-                        return true;
-                    }
-//                check for winning in vertical
-                    int vert = 1;
-                    while ((j + vert) < table.length && table[i][j + vert].hasMarkO()) {
-                        countVert++;
-                    }
-                    if (countVert == 3) {
-                        return true;
-                    }
-                }
-            }
+    public boolean winWithDiag(Predicate<Figure3T> pr) {
+        boolean diagFromTopRight = true;
+        boolean diagFromTopLeft = true;
+        for (int i = 0; i < table.length; i++) {
+            diagFromTopLeft &= pr.test(table[i][i]);
+            diagFromTopRight &= pr.test(table[i][table.length - 1 - i]);
         }
-        return false;
+        return (diagFromTopLeft || diagFromTopRight);
     }
 
     public boolean hasGap() {
