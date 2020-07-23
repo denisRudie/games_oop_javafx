@@ -37,10 +37,8 @@ public class Logic3T {
     }
 
     public boolean hasGap() {
-        int count = (int) Arrays.stream(table)
+        return Arrays.stream(table)
                 .flatMap(Arrays::stream)
-                .filter(figure3T -> !figure3T.hasMarkX() && !figure3T.hasMarkO())
-                .count();
-        return count > 0;
+                .anyMatch(f -> !f.hasMarkO() && !f.hasMarkX());
     }
 }
